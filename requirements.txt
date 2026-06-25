@@ -1,0 +1,18 @@
+# LLM & Agents
+langchain
+langchain-community
+langchain-core
+langchain-ollama
+langgraph
+ollama
+
+# Vector store & embeddings
+chromadb
+sentence-transformers
+
+# PDF parsing
+pypdf
+
+# Utilities
+python-dotenv
+pydantic
