@@ -1,10 +1,13 @@
 # agents/job_analyzer.py
 
+import re
+
 from langchain_ollama import OllamaLLM
 from langchain_core.prompts import PromptTemplate
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
+from rag.prompt_templates import JOB_ANALYSIS_PROMPT
 
 load_dotenv()
 
@@ -25,20 +28,8 @@ class JobAnalyzerAgent:
         
         self.prompt = PromptTemplate(
             input_variables=["job_description"],
-            template="""
-            You are an expert HR analyst. Analyze this job description and extract:
+            template=JOB_ANALYSIS_PROMPT
             
-            1. Job title
-            2. Sector/Industry
-            3. Experience level required (junior/mid/senior)
-            4. Company context
-            5. Key responsibilities (list of 3-5 points)
-            
-            Job Description:
-            {job_description}
-            
-            Respond in JSON format only.
-            """
         )
     
     def analyze(self, job_description: str) -> dict:
@@ -53,4 +44,12 @@ class JobAnalyzerAgent:
         """
         chain = self.prompt | self.llm
         response = chain.invoke({"job_description": job_description})
+        
+        json_match = re.search(r'\{.*\}', response, re.DOTALL)
+        
+        if json_match:
+            return json_match.group()
+
+        
+        
         return response

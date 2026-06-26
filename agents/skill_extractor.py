@@ -1,9 +1,12 @@
 # agents/skill_extractor.py
 
+import re
+
 from langchain_ollama import OllamaLLM
 from langchain_core.prompts import PromptTemplate
 from dotenv import load_dotenv
 import os
+from rag.prompt_templates import SKILL_EXTRACTION_PROMPT
 
 load_dotenv()
 
@@ -16,24 +19,7 @@ class SkillExtractorAgent:
         
         self.prompt = PromptTemplate(
             input_variables=["job_description"],
-            template="""
-            You are an expert technical recruiter. Extract all skills from this job description.
-            
-            Categorize them as:
-            1. Hard skills - Must have (technical, mandatory)
-            2. Hard skills - Nice to have (technical, optional)
-            3. Soft skills (communication, leadership, etc.)
-            
-            Job Description:
-            {job_description}
-            
-            Respond in JSON format only:
-            {{
-                "must_have": ["skill1", "skill2"],
-                "nice_to_have": ["skill1", "skill2"],
-                "soft_skills": ["skill1", "skill2"]
-            }}
-            """
+            template=SKILL_EXTRACTION_PROMPT
         )
     
     def extract(self, job_description: str) -> str:
@@ -48,4 +34,12 @@ class SkillExtractorAgent:
         """
         chain = self.prompt | self.llm
         response = chain.invoke({"job_description": job_description})
+
+        # Extract only the JSON block from the response
+        json_match = re.search(r'\{.*\}', response, re.DOTALL)
+        
+        if json_match:
+            return json_match.group()
+        
+        
         return response

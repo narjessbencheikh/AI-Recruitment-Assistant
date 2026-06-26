@@ -1,9 +1,12 @@
 # agents/profile_searcher.py
 
+import re
+
 from langchain_ollama import OllamaLLM
 from langchain_core.prompts import PromptTemplate
 from dotenv import load_dotenv
 import os
+from rag.prompt_templates import BENCHMARK_PROFILE_PROMPT
 
 load_dotenv()
 
@@ -16,26 +19,10 @@ class ProfileSearcherAgent:
         
         self.prompt = PromptTemplate(
             input_variables=["job_title", "must_have_skills", "experience_level"],
-            template="""
-            You are an expert recruiter doing benchmarking.
-            Based on this job profile, describe what a successful candidate looks like.
-            
-            Job Title: {job_title}
-            Required Skills: {must_have_skills}
-            Experience Level: {experience_level}
-            
-            Provide a benchmark profile in JSON format only:
-            {{
-                "ideal_background": "...",
-                "typical_experience_years": "...",
-                "key_past_roles": ["...", "..."],
-                "differentiating_factors": ["...", "..."],
-                "red_flags": ["...", "..."]
-            }}
-            """
+            template=BENCHMARK_PROFILE_PROMPT
         )
     
-    def search(self, job_title: str, must_have_skills: list, experience_level: str) -> str:
+    def search(self, job_title: str, must_have_skills: list, experience_level: str) -> dict:
         """
         Génère un profil benchmark pour un poste donné.
         
@@ -53,4 +40,10 @@ class ProfileSearcherAgent:
             "must_have_skills": ", ".join(must_have_skills),
             "experience_level": experience_level
         })
+        json_match = re.search(r'\{.*\}', response, re.DOTALL)
+
+        if json_match:
+             return json_match.group()
+        
+
         return response
