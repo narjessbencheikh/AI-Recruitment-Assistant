@@ -28,7 +28,6 @@ This system combines **Multi-Agent AI** and **RAG (Retrieval-Augmented Generatio
 - **OrchestratorAgent** → coordinates all agents via LangGraph StateGraph with error handling
 
 ### Part 2 — RAG System
-data/cvs/ (PDFs)
 
 ![RAG Pipeline](assets/rag_pipeline_diagram.png)
 
