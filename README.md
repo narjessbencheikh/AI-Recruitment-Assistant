@@ -17,23 +17,9 @@ This system combines **Multi-Agent AI** and **RAG (Retrieval-Augmented Generatio
 ## 🏗️ Architecture
 
 ### Part 1 — Multi-Agent System (LangGraph)
-Job Description (input)
 
-↓
+![Agent Architecture](assets/agent_architecture_overview.png)
 
-Orchestrator (LangGraph)
-
-↙            ↘
-
-Job Analyzer   Skill Extractor
-
-↓
-
-Profile Searcher
-
-↓
-
-Structured Analysis (output)
 
 **Agents:**
 - **JobAnalyzerAgent** → extracts job title, sector, experience level and responsibilities
@@ -44,17 +30,7 @@ Structured Analysis (output)
 ### Part 2 — RAG System
 data/cvs/ (PDFs)
 
-↓
-
-CVIndexer → ChromaDB (vector store)
-
-↓
-
-CVRetriever → Top-K similar profiles
-
-↓
-
-CVGenerator → Optimized CV (Mistral 7B)
+![RAG Pipeline](assets/rag_pipeline.png)
 
 **Pipeline:**
 - **Indexing** → PDFs extracted, chunked (500 words, 50 overlap), embedded with `all-MiniLM-L6-v2`
